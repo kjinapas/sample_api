@@ -13,14 +13,14 @@ const unsplash = axios.create({
 });
 
 async function fetchImages(query, numImages) {
-    // ... your request limit and caching logic would go here ...
+
 
     try {
         const response = await unsplash.get('/search/photos', {
             params: {
                 query: query,
                 per_page: Math.min(numImages, MAX_IMAGES_PER_REQUEST),
-                orientation: 'landscape',
+           
                 order_by: 'random'
             }
         });
@@ -41,6 +41,28 @@ router.get('/:guery/:number',async(req,res)=>{
         res.json(books)
     }catch(err){
         console.log(err)
+    }
+
+})
+
+
+router.get('/:t/:guery/:number',async(req,res)=>{
+    let text  = req.params.t
+    let query = req.params.guery
+    let number = parseInt(req.params.number)
+    try {
+        const response = await unsplash.get('/search/photos', {
+            params: {
+                query: query,
+                per_page: Math.min(number, MAX_IMAGES_PER_REQUEST),
+                orientation: text==='p'?"portrait":text==="l"?"landscape":"portrait",
+                order_by: 'random'
+            }
+        });
+        res.json(response.data.results);
+    } catch (error) {
+        console.error('Unsplash Error:', error);
+        throw error; // Re-throw to propagate error 
     }
 
 })
